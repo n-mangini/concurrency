@@ -5,7 +5,15 @@ fn handle_client(mut stream: TcpStream) {
     let mut buffer = [0; 1024];
     let read_bytes = stream.read(&mut buffer).unwrap();
     let request_str = String::from_utf8_lossy(&buffer[..read_bytes]);
-    println!("{:?}", request_str);
+    // lines crea un iterador, next avanza al siguiente elemento, en este caso, el primero, y unwrap es para manejar
+    // el Some, ya que podria ser vacio el siguiente elemento, entonces con unwrap() Some(valor) -> valor. Lo que cambia
+    // es que si esta vacio, hace panic y crashea, lo cual aca no esta mal
+    let first_line = request_str.lines().next().unwrap();
+    let req_parts: Vec<&str> = first_line.split_whitespace().collect();
+    let path = req_parts[1];
+    let iterations: &str = path.split('/').last().unwrap();
+
+    println!("{}", iterations);
 }
 
 fn main() -> std::io::Result<()> {
