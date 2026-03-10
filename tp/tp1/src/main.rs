@@ -13,11 +13,11 @@ fn handle_client(mut stream: TcpStream) {
     let path = req_parts[1];
     let iterations: &str = path.split('/').last().unwrap();
 
-    println!("{}", iterations);
+    println!("{}", calculate_pi(iterations.parse().unwrap()));
 }
 
 fn main() -> std::io::Result<()> {
-    let listener = TcpListener::bind("0.0.0.0:8080").unwrap();
+    let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
 
     // accept connections and process them serially
     for stream in listener.incoming() {
