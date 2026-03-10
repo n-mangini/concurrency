@@ -1,6 +1,21 @@
-fn main() {
-    let pi = calculate_pi(100);
-    println!("{}", pi);
+use std::io::Read;
+use std::net::{TcpListener, TcpStream};
+
+fn handle_client(mut stream: TcpStream) {
+    let mut buffer = [0; 1024];
+    let read_bytes = stream.read(&mut buffer).unwrap();
+    let request_str = String::from_utf8_lossy(&buffer[..read_bytes]);
+    println!("{:?}", request_str);
+}
+
+fn main() -> std::io::Result<()> {
+    let listener = TcpListener::bind("0.0.0.0:8080").unwrap();
+
+    // accept connections and process them serially
+    for stream in listener.incoming() {
+        handle_client(stream?);
+    }
+    Ok(())
 }
 
 fn calculate_pi(i: u64) -> f64 {
