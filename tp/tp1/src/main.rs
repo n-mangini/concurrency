@@ -1,6 +1,7 @@
 use std::io::Read;
 use std::io::Write;
 use std::net::{TcpListener, TcpStream};
+use std::thread;
 
 fn handle_client(mut stream: TcpStream) {
     let mut buffer = [0; 1024];
@@ -29,7 +30,7 @@ fn main() -> std::io::Result<()> {
 
     // accept connections and process them serially
     for stream in listener.incoming() {
-        handle_client(stream?);
+        thread::spawn(|| handle_client(stream.unwrap()));
     }
     Ok(())
 }
