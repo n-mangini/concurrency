@@ -30,7 +30,7 @@ fn main() -> std::io::Result<()> {
 
     // accept connections and process them serially
     for stream in listener.incoming() {
-        thread::spawn(|| handle_client(stream.unwrap()));
+        handle_client(stream?);
     }
     Ok(())
 }
