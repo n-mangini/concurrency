@@ -7,6 +7,7 @@ ITERATIONS_CSV="${ITERATIONS:-10000,100000,1000000}"
 CONCURRENCIES_CSV="${CONCURRENCIES:-1,10,50}"
 CHECK_ITERATIONS="${CHECK_ITERATIONS:-1000}"
 TITLE="${TITLE:-TP2 - Analisis de ApacheBench}"
+CHART_FILE_NAME="ft-vs-concurrency.svg"
 OUT_DIR=""
 
 RESULT_ROWS=()
@@ -114,6 +115,23 @@ ratio_value() {
         }
       } else {
         printf "%.2f", n / d
+      }
+    }
+  '
+}
+
+scale_linear() {
+  local value="$1"
+  local domain_start="$2"
+  local domain_end="$3"
+  local range_start="$4"
+  local range_end="$5"
+  awk -v v="$value" -v d0="$domain_start" -v d1="$domain_end" -v r0="$range_start" -v r1="$range_end" '
+    BEGIN {
+      if (d1 == d0) {
+        printf "%.2f", (r0 + r1) / 2
+      } else {
+        printf "%.2f", r0 + ((v - d0) / (d1 - d0)) * (r1 - r0)
       }
     }
   '
@@ -328,6 +346,174 @@ compute_metrics() {
   fi
 }
 
+generate_mean_chart_svg() {
+  local chart_path="$1"
+  local chart_rel
+  local width=920
+  local height=440
+  local margin_left=78
+  local margin_right=32
+  local margin_top=58
+  local margin_bottom=76
+  local inner_width=$((width - margin_left - margin_right))
+  local inner_height=$((height - margin_top - margin_bottom))
+  local tick_count=4
+  local max_mean="0"
+  local domain_max
+  local iterations
+  local concurrency
+  local value
+  local tick
+  local tick_value
+  local tick_y
+  local label_x
+  local label_y
+  local x
+  local y
+  local points
+  local legend_x="$margin_left"
+  local legend_y=28
+  local legend_step=132
+  local point_index
+  local series_index=0
+  local concurrency_count="${#CONCURRENCIES_VALUES[@]}"
+  local -a palette=("#0f6c5c" "#c85c38" "#245fa6" "#91631a" "#7b3ea8" "#aa2a45")
+
+  chart_rel="$(realpath --relative-to="$PWD" "$chart_path" 2>/dev/null || printf '%s' "$chart_path")"
+
+  for iterations in "${ITERATIONS_VALUES[@]}"; do
+    for concurrency in "${CONCURRENCIES_VALUES[@]}"; do
+      value="${MEAN_BY_KEY[${iterations}|${concurrency}]}"
+      if float_gt "$value" "$max_mean"; then
+        max_mean="$value"
+      fi
+    done
+  done
+
+  domain_max="$(awk -v m="$max_mean" 'BEGIN {
+    if (m <= 0) {
+      printf "1.00"
+    } else {
+      printf "%.2f", m * 1.10
+    }
+  }')"
+
+  {
+    printf '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %s %s" role="img" aria-label="f(t) segun concurrencia">\n' "$width" "$height"
+    printf '  <rect width="100%%" height="100%%" fill="#fbf7ef"/>\n'
+    printf '  <text x="%s" y="26" fill="#172033" font-family="Avenir Next, Segoe UI, sans-serif" font-size="22" font-weight="700">f(t) segun concurrencia</text>\n' "$margin_left"
+    printf '  <text x="%s" y="46" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12">f(t) = tiempo medio por request (mean ms). Cada linea corresponde a un valor de i.</text>\n' "$margin_left"
+
+    for iterations in "${ITERATIONS_VALUES[@]}"; do
+      local color="${palette[$((series_index % ${#palette[@]}))]}"
+      printf '  <circle cx="%s" cy="%s" r="5" fill="%s"/>\n' "$legend_x" "$legend_y" "$color"
+      printf '  <text x="%s" y="%s" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12">i=%s</text>\n' \
+        "$((legend_x + 12))" \
+        "$((legend_y + 4))" \
+        "$iterations"
+      legend_x=$((legend_x + legend_step))
+      series_index=$((series_index + 1))
+    done
+
+    for ((tick = 0; tick <= tick_count; tick += 1)); do
+      tick_value="$(awk -v i="$tick" -v ticks="$tick_count" -v max="$domain_max" 'BEGIN { printf "%.2f", (i / ticks) * max }')"
+      tick_y="$(scale_linear "$tick_value" "0" "$domain_max" "$((height - margin_bottom))" "$margin_top")"
+      printf '  <line x1="%s" y1="%s" x2="%s" y2="%s" stroke="rgba(23,32,51,0.12)" stroke-width="1"/>\n' \
+        "$margin_left" \
+        "$tick_y" \
+        "$((width - margin_right))" \
+        "$tick_y"
+      printf '  <text x="%s" y="%s" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" text-anchor="end">%s</text>\n' \
+        "$((margin_left - 12))" \
+        "$(awk -v y="$tick_y" 'BEGIN { printf "%.2f", y + 4 }')" \
+        "$(format_number "$tick_value" 2)"
+    done
+
+    printf '  <line x1="%s" y1="%s" x2="%s" y2="%s" stroke="rgba(23,32,51,0.40)" stroke-width="1.4"/>\n' \
+      "$margin_left" \
+      "$((height - margin_bottom))" \
+      "$((width - margin_right))" \
+      "$((height - margin_bottom))"
+    printf '  <line x1="%s" y1="%s" x2="%s" y2="%s" stroke="rgba(23,32,51,0.40)" stroke-width="1.4"/>\n' \
+      "$margin_left" \
+      "$margin_top" \
+      "$margin_left" \
+      "$((height - margin_bottom))"
+
+    point_index=0
+    for concurrency in "${CONCURRENCIES_VALUES[@]}"; do
+      if (( concurrency_count == 1 )); then
+        x="$(awk -v left="$margin_left" -v plot="$inner_width" 'BEGIN { printf "%.2f", left + plot / 2 }')"
+      else
+        x="$(scale_linear "$point_index" "0" "$((concurrency_count - 1))" "$margin_left" "$((width - margin_right))")"
+      fi
+      printf '  <text x="%s" y="%s" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" text-anchor="middle">%s</text>\n' \
+        "$x" \
+        "$((height - margin_bottom + 26))" \
+        "$concurrency"
+      point_index=$((point_index + 1))
+    done
+
+    printf '  <text x="%s" y="%s" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" text-anchor="middle">Concurrencia</text>\n' \
+      "$((width / 2))" \
+      "$((height - 18))"
+    printf '  <text x="22" y="%s" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" text-anchor="middle" transform="rotate(-90 22 %s)">Tiempo medio por request (ms)</text>\n' \
+      "$((height / 2))" \
+      "$((height / 2))"
+
+    series_index=0
+    for iterations in "${ITERATIONS_VALUES[@]}"; do
+      local color="${palette[$((series_index % ${#palette[@]}))]}"
+      points=""
+      point_index=0
+      label_x=""
+      label_y=""
+
+      for concurrency in "${CONCURRENCIES_VALUES[@]}"; do
+        if (( concurrency_count == 1 )); then
+          x="$(awk -v left="$margin_left" -v plot="$inner_width" 'BEGIN { printf "%.2f", left + plot / 2 }')"
+        else
+          x="$(scale_linear "$point_index" "0" "$((concurrency_count - 1))" "$margin_left" "$((width - margin_right))")"
+        fi
+        value="${MEAN_BY_KEY[${iterations}|${concurrency}]}"
+        y="$(scale_linear "$value" "0" "$domain_max" "$((height - margin_bottom))" "$margin_top")"
+        points+="${x},${y} "
+        label_x="$x"
+        label_y="$y"
+        point_index=$((point_index + 1))
+      done
+
+      printf '  <polyline fill="none" stroke="%s" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="%s"/>\n' \
+        "$color" \
+        "$points"
+
+      point_index=0
+      for concurrency in "${CONCURRENCIES_VALUES[@]}"; do
+        if (( concurrency_count == 1 )); then
+          x="$(awk -v left="$margin_left" -v plot="$inner_width" 'BEGIN { printf "%.2f", left + plot / 2 }')"
+        else
+          x="$(scale_linear "$point_index" "0" "$((concurrency_count - 1))" "$margin_left" "$((width - margin_right))")"
+        fi
+        value="${MEAN_BY_KEY[${iterations}|${concurrency}]}"
+        y="$(scale_linear "$value" "0" "$domain_max" "$((height - margin_bottom))" "$margin_top")"
+        printf '  <circle cx="%s" cy="%s" r="5" fill="%s" stroke="white" stroke-width="2"/>\n' "$x" "$y" "$color"
+        point_index=$((point_index + 1))
+      done
+
+      printf '  <text x="%s" y="%s" fill="#172033" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" font-weight="700">i=%s</text>\n' \
+        "$(awk -v x="$label_x" 'BEGIN { printf "%.2f", x + 10 }')" \
+        "$(awk -v y="$label_y" 'BEGIN { printf "%.2f", y + 4 }')" \
+        "$iterations"
+
+      series_index=$((series_index + 1))
+    done
+
+    printf '</svg>\n'
+  } >"$chart_path"
+
+  printf 'Chart written to %s\n' "$chart_rel"
+}
+
 generate_markdown() {
   local report_path="$1"
   local started_at="$2"
@@ -361,6 +547,10 @@ generate_markdown() {
         "$(format_number "$p95_ms" 2)" \
         "$failed_requests"
     done
+
+    printf '\n## Grafico f(t) segun concurrencia\n\n'
+    printf 'Tomamos `f(t)` como el tiempo medio por request (`mean ms`) y usamos la concurrencia como eje horizontal.\n\n'
+    printf '![Grafico de f(t) segun concurrencia](%s)\n' "$CHART_FILE_NAME"
 
     printf '\n## Tabla derivada\n\n'
     printf '| i |'
@@ -485,6 +675,7 @@ mkdir -p "$OUT_DIR"
 
 STARTED_AT="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 REPORT_PATH="$OUT_DIR/report.md"
+CHART_PATH="$OUT_DIR/$CHART_FILE_NAME"
 HEALTH_URL="${BASE_URL%/}/$CHECK_ITERATIONS"
 
 echo "Checking server on $HEALTH_URL"
@@ -503,9 +694,11 @@ for iterations in "${ITERATIONS_VALUES[@]}"; do
 done
 
 compute_metrics
+generate_mean_chart_svg "$CHART_PATH"
 generate_markdown "$REPORT_PATH" "$STARTED_AT"
 
 cat <<EOF
 Benchmark matrix finished.
 Report: $REPORT_PATH
+Chart: $CHART_PATH
 EOF

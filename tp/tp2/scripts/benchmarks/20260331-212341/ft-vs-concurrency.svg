@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 440" role="img" aria-label="f(t) segun concurrencia">
+  <rect width="100%" height="100%" fill="#fbf7ef"/>
+  <text x="78" y="26" fill="#172033" font-family="Avenir Next, Segoe UI, sans-serif" font-size="22" font-weight="700">f(t) segun concurrencia</text>
+  <text x="78" y="46" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12">f(t) = tiempo medio por request (mean ms). Cada linea corresponde a un valor de i.</text>
+  <circle cx="78" cy="28" r="5" fill="#0f6c5c"/>
+  <text x="90" y="32" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12">i=10000</text>
+  <circle cx="210" cy="28" r="5" fill="#c85c38"/>
+  <text x="222" y="32" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12">i=100000</text>
+  <circle cx="342" cy="28" r="5" fill="#245fa6"/>
+  <text x="354" y="32" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12">i=1000000</text>
+  <line x1="78" y1="364.00" x2="888" y2="364.00" stroke="rgba(23,32,51,0.12)" stroke-width="1"/>
+  <text x="66" y="368.00" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" text-anchor="end">0.00</text>
+  <line x1="78" y1="287.47" x2="888" y2="287.47" stroke="rgba(23,32,51,0.12)" stroke-width="1"/>
+  <text x="66" y="291.47" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" text-anchor="end">14.35</text>
+  <line x1="78" y1="211.00" x2="888" y2="211.00" stroke="rgba(23,32,51,0.12)" stroke-width="1"/>
+  <text x="66" y="215.00" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" text-anchor="end">28.69</text>
+  <line x1="78" y1="134.47" x2="888" y2="134.47" stroke="rgba(23,32,51,0.12)" stroke-width="1"/>
+  <text x="66" y="138.47" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" text-anchor="end">43.04</text>
+  <line x1="78" y1="58.00" x2="888" y2="58.00" stroke="rgba(23,32,51,0.12)" stroke-width="1"/>
+  <text x="66" y="62.00" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" text-anchor="end">57.38</text>
+  <line x1="78" y1="364" x2="888" y2="364" stroke="rgba(23,32,51,0.40)" stroke-width="1.4"/>
+  <line x1="78" y1="58" x2="78" y2="364" stroke="rgba(23,32,51,0.40)" stroke-width="1.4"/>
+  <text x="78.00" y="390" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" text-anchor="middle">1</text>
+  <text x="483.00" y="390" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" text-anchor="middle">10</text>
+  <text x="888.00" y="390" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" text-anchor="middle">50</text>
+  <text x="460" y="422" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" text-anchor="middle">Concurrencia</text>
+  <text x="22" y="220" fill="#566071" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" text-anchor="middle" transform="rotate(-90 22 220)">Tiempo medio por request (ms)</text>
+  <polyline fill="none" stroke="#0f6c5c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="78.00,361.44 483.00,356.81 888.00,329.86 "/>
+  <circle cx="78.00" cy="361.44" r="5" fill="#0f6c5c" stroke="white" stroke-width="2"/>
+  <circle cx="483.00" cy="356.81" r="5" fill="#0f6c5c" stroke="white" stroke-width="2"/>
+  <circle cx="888.00" cy="329.86" r="5" fill="#0f6c5c" stroke="white" stroke-width="2"/>
+  <text x="898.00" y="333.86" fill="#172033" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" font-weight="700">i=10000</text>
+  <polyline fill="none" stroke="#c85c38" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="78.00,357.93 483.00,355.61 888.00,323.11 "/>
+  <circle cx="78.00" cy="357.93" r="5" fill="#c85c38" stroke="white" stroke-width="2"/>
+  <circle cx="483.00" cy="355.61" r="5" fill="#c85c38" stroke="white" stroke-width="2"/>
+  <circle cx="888.00" cy="323.11" r="5" fill="#c85c38" stroke="white" stroke-width="2"/>
+  <text x="898.00" y="327.11" fill="#172033" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" font-weight="700">i=100000</text>
+  <polyline fill="none" stroke="#245fa6" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="78.00,328.79 483.00,302.62 888.00,85.83 "/>
+  <circle cx="78.00" cy="328.79" r="5" fill="#245fa6" stroke="white" stroke-width="2"/>
+  <circle cx="483.00" cy="302.62" r="5" fill="#245fa6" stroke="white" stroke-width="2"/>
+  <circle cx="888.00" cy="85.83" r="5" fill="#245fa6" stroke="white" stroke-width="2"/>
+  <text x="898.00" y="89.83" fill="#172033" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" font-weight="700">i=1000000</text>
+</svg>
