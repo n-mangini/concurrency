@@ -2,6 +2,8 @@ use std::io::Read;
 use std::io::Write;
 use std::net::{TcpListener, TcpStream};
 use std::thread;
+use std::sync::mpsc;
+use std::sync::mpsc::Receiver;
 
 fn handle_client(mut stream: TcpStream) {
     let mut buffer = [0; 1024];
@@ -20,21 +22,34 @@ fn handle_client(mut stream: TcpStream) {
     stream.write_all(response.as_bytes()).unwrap();
 }
 
+type Job = Box<dyn FnOnce() + Send + 'static>;
+
+struct ThreadPool(i32, Receiver<Job>);
+
+impl ThreadPool {
+    fn new(pool_size: i32, receiver_channel: Receiver<Job>) -> ThreadPool {
+        todo!()
+    }
+}
+
 fn main() -> std::io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
-    let mut pool = Vec::new();
-    let POOL_LIMIT = 20;
 
-    // accept connections and process them serially
+    // El main thread crea el canal (la cola FIFO)
+    let (sender, receiver) = std::sync::mpsc::channel::<Job>();
+
+    // Le pasamos el receptor a la pool
+    let pool = ThreadPool::new(20, receiver);
 
     for stream in listener.incoming() {
-        if pool.len() < POOL_LIMIT {
-            pool.push(POOL_LIMIT);
-            thread::spawn(|| handle_client(stream.unwrap()));
-        }
-        else {
-            handle_client(stream.unwrap());
-        }
+        let stream = stream.unwrap();
+
+        let job = Box::new(move || {
+            handle_client(stream);
+        });
+
+        // El main envía directamente el mensaje
+        sender.send(job).unwrap();
     }
     Ok(())
 }
