@@ -1,0 +1,49 @@
+1a. Incorrecto.
+1b. Correcto. 
+1c. Incorrecto.
+1d. Incorrecto.
+
+2a. Incorrecto
+2b. Incorrecto
+2c. Incorrecto
+2d. Correcto
+
+3a. OK.
+3b. Incorrecto.
+3c. Incorrecto.
+3d. Incorrecto.
+ 
+4a. Incorrecto. No es un requisito esencial.
+4b. Incorrecto. No es un requisito esencial.
+4c. OK.
+4d. Incorrecto. No todos los tipos pueden enviarse sin cumplir {\em traits\/}.
+
+5a. Incorrecto. Ver comentario en el punto c abajo.
+5b. Incorrecto. Compartir datos mutables sin sincronización puede crear race conditions. 
+5c. Incorrecto. Crear demasiadas tareas pequeñas o aumentar hilos indefinidamente genera overhead o sobre-subscription.
+5d. Correcto. Tareas cortas y no bloqueantes permiten aprovechar mejor los hilos del pool
+
+6a. Incorrecto.
+6b. Incorrecto.
+6c. Incorrecto.
+6d. Correcto. 
+
+7a. Incorrecto. Varios procesos podrían acceder al recurso. 
+7b. Incorrecto.
+7c. Correcto.
+7d. Correcto.
+ 
+8a. Incorrecto.
+8b. Correcto.
+8c. Incorrecto.
+8d. Correcto.
+
+9a. Incorrecto.
+9b. Incorrecto.
+9c. Correcto.
+9d. Incorrecto.
+ 
+10a. Incorrecto.
+10b. Incorrecto.
+10c. Correcto.
+10d. Incorrecto.
