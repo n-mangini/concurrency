@@ -2,7 +2,7 @@ use std::io::Read;
 use std::io::Write;
 use std::net::{TcpListener, TcpStream};
 use std::thread;
-use std::sync::mpsc;
+use std::sync::{mpsc, Arc, Mutex};
 use std::sync::mpsc::Receiver;
 
 fn handle_client(mut stream: TcpStream) {
@@ -22,13 +22,23 @@ fn handle_client(mut stream: TcpStream) {
     stream.write_all(response.as_bytes()).unwrap();
 }
 
+// Un job es un boz que por adentro debe tener un objeto que cumpla con tres trails.interfaces dinamicos
+// El send es un RC - tenemos una forma de tener un RC safe para compartir entre threads, pasando la referencia entre varios. Al ser comparaciones aotmic, son seguras
+// lo que sea que este en el send, por adentro debe cumplir
+// static - las variables tienen que vivir lo que viva el trhead
 type Job = Box<dyn FnOnce() + Send + 'static>;
 
+pub struct ThreadPool {
+    workers: Vec<>
+}
 struct ThreadPool(i32, Receiver<Job>);
 
 impl ThreadPool {
-    fn new(pool_size: i32, receiver_channel: Receiver<Job>) -> ThreadPool {
-        todo!()
+    fn new(pool_size: usize, receiver: Receiver<Job>) -> ThreadPool {
+        let receiver = Arc::new(Mutex::new(receiver));
+
+        let mut workers = Vec::with_capacity(pool_size)
+
     }
 }
 
@@ -37,6 +47,8 @@ fn main() -> std::io::Result<()> {
 
     // El main thread crea el canal (la cola FIFO)
     let (sender, receiver) = std::sync::mpsc::channel::<Job>();
+
+    let receiver = Arc::new(Mutex::new(receiver));
 
     // Le pasamos el receptor a la pool
     let pool = ThreadPool::new(20, receiver);
@@ -54,6 +66,28 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
+impl thread_pool {
+    pub fn new(size: usize)
+
+    pub fn execute<F>
+}
+
+impl Worker {
+    fn new(id: usize, receiver: Arc<Mutex<mpsc:Receiver<Job>>>) -> Worker {
+        let thread = thread::spawn(move || {
+            loop {
+                let job = {
+                    // de esta manera, funciona como single thread
+                    // let lock = receiver.lock().unwrap().recv().unwrap();
+                    let lock = receiver.lock().unwrap();
+                    lock.recv().unwrap() //el primer thread, se lockea aca, el resto se lockea arriba
+                };
+                job();
+            }
+        });
+    }
+}
+
 fn calculate_pi(i: u64) -> f64 {
     let mut suma = 0.0;
     for k in 0..i {
@@ -66,4 +100,17 @@ fn calculate_pi(i: u64) -> f64 {
         }
     }
     4.0 * suma
+}
+
+fn hello () {
+    let n = 10;
+    let mut m = 10;
+    thread::scope(|s| {
+        s.spawn(|| {
+            m = m + 1;
+            println!("Hello from thread 1, n = {n}")
+        });
+        s.spawn(|| {println!("Hello from thread 2, n = {n}")});
+    });
+    println!("{m}");
 }
