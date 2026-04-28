@@ -1,0 +1,49 @@
+1a. Correcto.  
+1b. Incorrecto. Las referencias prestadas al thread con thread :: scope no pueden vivir más allá del scope. 
+1c. Correcto
+1d. Incorrecto. Puede capturarlas si las variables siguen vivas. 
+
+2a. Incorrecto. "Throws InterruptedException" es una opción que no tiene nada que ver con el estado del thread. 
+2b. Incorrecto. Puede ser interrumpido, pero dará un error. 
+2c. Correcto. 
+2d. Incorrecto. 
+
+3a. Correcto. Las referencias prestadas no pueden escapar del scope. 
+3b. Incorrecto. 
+3c. Incorrecto. Ver comentario del punto d. 
+3d. Correcto. 
+ 
+4a. Correcto.
+4b. Correcto. 
+4c. Incorrecto. No crea 50 filas; sólo controla concurrencia. 
+4d. Incorrecto. El benchmark realiza requests reales al servidor especificado. 
+
+5a. No siempre. Ver comentario de la opción b.
+5b. Incorrecto. El overhead de creación y coordinación puede hacer inconveniente la concurrencia para entradas pequeñas, no grandes. 
+5c. Correcto. Ver comentario de la opción b.
+5d. Correcto. 
+
+6a. Incorrecto. Esto es latencia. 
+6b. Incorrecto. Esto es ancho de banda.
+6c. Correcto. 
+6d. Incorrecto. 
+
+7a. Correcto. 
+7b. Incorrecto. El merge es secuencial. 
+7c. Incorrecto. 
+7d. Correcto. 
+ 
+8a. Correcto
+8b. Correcto. 
+8c. Incorrecto. Ver comentario de la opción d.
+8d. Incorrecto. El ordenamiento de y no comienza hasta que no termine el de x. 
+
+9a. Correcto. En cada uno de los fragmentos hay un thread principal. Además, en el primero hay dos threads secundarios y en el segundo uno.
+9b. Incorrecto. Se ignoran los threads principales. Ver comentario de la opción a. 
+9c. Incorrecto. Ver comentario de la opción a. 
+9d. Incorrecto. 
+ 
+10a. Incorrecto. El orden de ejecución depende del scheduler. 
+10b. Incorrecto. Es cierto que la ejecución de un thread puede verse afectada por sncronización. 
+10c. Correcto. 
+10d. Incorrecto. Ver comentario de la opción a. 

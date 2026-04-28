@@ -1,0 +1,49 @@
+1a. Es una conjetura razonable, pero el hecho de que un procesador tenga más transistores que otro no significa que sea más moderno. 3/10. 
+1b. Es errónea. P2 tiene 4.6 veces más transistores que P1. La cifra 22% es muy exigua. 0/10
+1c. Es correcto. Si asumimos que, en el mejor de los casos el trabajo se reparte entre los transistores disponibles, tenemos los tiempos t1*29 = t2*134. Entonces t2 = 19/134*t1 = 0.22*t1. 10/10
+1d. No hay ninguna evidencia que el procesador P2 use concurrencia. 0/10
+
+2a. Correcto. Hay tiempos muertos, por ejemplo de CPU. 10/10
+2b. En realidad, el consumo de energía por operación en la CPU se mantiene constante. Se puede considerar algún punto si se considera el consumo total de energía y se divide por la cantidad de operaciones efectuadas. 5/10
+2c. No es correcto. Normalmente se efectúa en un único procesador. 0/10
+2d. Correcto. 10/10
+
+3a. No es correcto. El desempeño no puede aumentar más rápidamente que el número de transistores. 0/10
+3b. Correcto. Esto es coherente con el hecho de que cuando aumenta la frecuencia de Clock aumenta el consumo de energía y el desempeño hasta un cierto punto. 10/10
+3c. Incorrecto. Los tramos descendentes no tienen sentido. 0/10
+3d. Incorrecto. Los tramos descendentes no tienen sentido. 0/10
+
+4a. Correcto. 10/10
+4b. Incorrecto. Podemos tener concurrencia sin paralelismo. 0/10
+4c. Correcto. Se eliminan tiempos muertos. 10/10
+4d. Incorrecto. No es el caso. 0/10
+
+5a. En realidad, esto también sucede en multiprogramación. No sería una extensión si sólo fuese esto. 0/10
+5b. Correcto. 10/10
+5c. Correcto. 10/10
+5d. Incorrecto. Un usuario no se da cuenta de que su proceso puede pasar por varias CPUs. 0/10
+
+6a. No es esto. Significa que todos los procesos eventualmente acceden al recurso que solicitaron. Se puede aceptar parcialmente. 3/10
+6b. Correcto. 10/10
+6c. Incorrecto. No necesariamente lo obtendrá inmediatamente. 0/10
+6d. Incorrecto. La idea de fairness no tienen nada que ver con costos de procesamiento. 0/10
+
+7a. Esto es erróneo. También puede quedar bloqueado un proceso en Overlapping. Lo único que implica Overlapping es que varios procesos pueden estar siendo ejecutados en el mismo momento. Se puede considerar algo porque pueden pensar que estamos hablando sólo de Overlapping en un contexto en el que no hay Interleaving. 3/10
+7b. Correcto. 10/10
+7c. Correcto. 10/10
+7d. Correcto. 10/10
+
+8a. Incorrecto. Pueden ser efectuadas en el mismo momento. 0/10
+8b. Incorrecto. Pueed haber concurrencia con un único procesador. Por ejemplo, multiprogramming. 0/10
+8c. Correcto. 10/10
+8d. Correcto. 10/10
+
+9a. No es correcto. En el segundo ejemplo no hay interleaving. 0/10
+9b. Correcto. 10/10
+9c. Correcto. Se están realizando varias tareas simultáneamente. 10/10
+9d. Corecto. ALgunas tareas se realizan en el mismo momento. 10/10
+
+10a. Es cierto que Cooperative Scheduling puede llevar a una monopolización de la CPU. Pero esto no quiere decir que el monopolizador sea desaprensivo. Simplemente puede pasar que tenga un gran requerimiento de CPU y por lo tanto no va a dejarla hasta terminar. 5/10
+10b. Esto es correcto. Por más que un participante tenga una gran demanda de CPU, el control central se encarga de asegurar fairness. 10/10
+10c. No es cierto que el Preemptive Scheduling sea más fácil de implementar. El hecho de que la autoridad central tenga libertad para distribuir el tiempo de CPU no tiene nada que ver con esto. 0/10
+10d. En realidad, Cooperative Scheduling también usa Context Switching, aunque sólo ocasionalmente. Es correcto. 10/10
