@@ -1,5 +1,5 @@
 [package]
-name = "filosofos_semaphore"
+name = "monitor_waiting_priority"
 version = "0.1.0"
 edition = "2024"
 
