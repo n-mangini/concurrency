@@ -69,6 +69,7 @@ impl Airport {
         //dejo de esperar, asi que me salgo de la lista porque ahora paso a ocupar la pista
         state.waiting_list.pop_front();
 
+        //TODO aca falta hacer como los otros casos, luego de salir del while, tengo que encontrar esa misma pista que cumple la condiciones, por lo cual, falta lo de waiting list
         let found_runway = state.runways.iter_mut().find(|r| !r.is_occupied).unwrap();
 
         found_runway.is_occupied = true;

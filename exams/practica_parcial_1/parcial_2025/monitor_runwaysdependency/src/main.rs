@@ -2,25 +2,27 @@ use std::sync::{Arc, Condvar, Mutex};
 use std::thread;
 
 pub struct Runway {
-    id: u32,
+    id: usize,
     is_occupied: bool,
+    conflict_ids: Vec<usize>,
 }
 
 impl Runway {
-    fn new(id: u32) -> Runway {
+    fn new(id: usize, conflict_ids: Vec<usize>) -> Runway {
         Runway {
             id,
             is_occupied: false,
+            conflict_ids,
         }
     }
 }
 
 pub struct Plane {
-    id: u32,
+    id: usize,
 }
 
 impl Plane {
-    fn new(id: u32) -> Plane {
+    fn new(id: usize) -> Plane {
         Plane { id }
     }
 }
@@ -39,21 +41,33 @@ impl Airport {
         }
     }
 
-    fn request_runway(&self) -> u32 {
+    fn request_runway(&self) -> usize {
         let mut runways = self.runways.lock().unwrap();
-        // chequea si todas las pistas estan ocupadas
-        while runways.iter().all(|r| r.is_occupied) {
-            //hacemos un wait, y al pasarle el lock, lo que hacemos es liberarlo hasta que se despierta
-            // asignamos el wait a runways para que el lock se guarde en la variable original
+        // El caso desfavorable lo planteamos como el caso favorable negado
+        // Cuando PUEDO atterizar? -> Cuando hay alguna pista libre y esa pista no tiene conflicts
+        while !runways.iter().any(|r| {
+            !r.is_occupied
+                && r.conflict_ids
+                    .iter()
+                    .all(|&id| !runways.iter().any(|p| p.id == id && p.is_occupied))
+        }) {
             runways = self.runway_available.wait(runways).unwrap();
         }
 
-        let found_runway = runways.iter_mut().find(|r| !r.is_occupied).unwrap();
-        found_runway.is_occupied = true;
-        found_runway.id
+        // agarramos esa misma pista que nos hizo salir del while
+        // buscamos su posicion en el array con un interador inmutable
+        let found_runway_index = runways.iter().position(|r| {
+            !r.is_occupied
+                && r.conflict_ids
+                .iter()
+                .all(|&id| !runways.iter().any(|p| p.id == id && p.is_occupied))
+        }).unwrap();
+
+        runways[found_runway_index].is_occupied = true;
+        runways[found_runway_index].id
     }
 
-    fn release_runway(&self, runway_id: u32) {
+    fn release_runway(&self, runway_id: usize) {
         let mut runways = self.runways.lock().unwrap();
         if let Some(runway) = runways.iter_mut().find(|r| r.id == runway_id) {
             runway.is_occupied = false;
@@ -65,7 +79,9 @@ impl Airport {
 
 fn main() {
     // Create the runways, the planes, and the airport
-    let runways = (0..3).map(|i| Runway::new(i)).collect();
+    let runway_13 = Runway::new(13, vec![31]);
+    let runway_31 = Runway::new(31, vec![13]);
+    let runways = vec![runway_13, runway_31];
     let planes = (0..10).map(|i| Plane::new(i));
     let arc_airport = Arc::new(Airport::new(runways));
     // Launch one thread per plane

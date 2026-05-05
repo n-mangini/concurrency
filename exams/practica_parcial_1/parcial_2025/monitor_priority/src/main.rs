@@ -70,10 +70,12 @@ impl Airport {
         //dejo de esperar, asi que me salgo de la lista porque ahora paso a ocupar la pista
         state.waiting_list.pop();
 
-        let found_runway = state.runways.iter_mut().find(|r| !r.is_occupied).unwrap();
+        let found_runway_pos = state.runways.iter().position(|r| {
+            !r.is_occupied && *state.waiting_list.peek().unwrap() == priority
+        }).unwrap(); //unwrap porque estoy seguroq ue la voy a encontrar
 
-        found_runway.is_occupied = true;
-        found_runway.id
+        state.runways[found_runway_pos].is_occupied = true;
+        state.runways[found_runway_pos].id
     }
 
     fn release_runway(&self, runway_id: u32) {
